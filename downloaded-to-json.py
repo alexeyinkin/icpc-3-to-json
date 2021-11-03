@@ -12,6 +12,11 @@ skip_ids = {
 
 parent_types = {
     'chapter',
+    'component',
+}
+
+no_index_types = {
+    'component',
 }
 
 leaf_types = {
@@ -44,6 +49,8 @@ ancestor_ids = [root_id]
 
 
 def process_recursive(id, dict_, current_ancestor_ids):
+    order = 0
+
     for item in get_list_by_id(id):
         id = str(item.get('id', ''))
         type_ = item.get('type', '')
@@ -56,6 +63,8 @@ def process_recursive(id, dict_, current_ancestor_ids):
             if id in skip_ids: continue
             if type_ == 'chapter':
                 processed_item = chapter_to_dict(item)
+            elif type_ == 'component':
+                processed_item = component_to_dict(item)
 
         if type_ in parent_types:
             children_ancestor_ids = current_ancestor_ids + [id]
@@ -66,6 +75,8 @@ def process_recursive(id, dict_, current_ancestor_ids):
             processed_item['parentId'] = current_ancestor_ids[-1]
             processed_item['ancestorIds'] = current_ancestor_ids
             processed_item['type'] = type_
+            processed_item['index'] = not type_ in no_index_types
+            processed_item['order'] = order
 
             title = processed_item.get('title', '')
             if title == '':
@@ -76,6 +87,8 @@ def process_recursive(id, dict_, current_ancestor_ids):
 
         if children:
             process_recursive(id, dict_, children_ancestor_ids)
+
+        order += 1
 
 
 def get_list_by_id(id):
@@ -89,6 +102,10 @@ def id_to_filename(id):
 
 
 def chapter_to_dict(item):
+    return {}
+
+
+def component_to_dict(item):
     return {}
 
 
